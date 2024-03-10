@@ -2,10 +2,13 @@
 #include <vector>
 #include <string>
 #include <unordered_set>
+#include <algorithm>
 
 using std::unordered_set;
 using std::vector;
 using std::string;
+using std::find;
+
 
 class Clause
 {

@@ -1,12 +1,11 @@
-#include "Clause.h"
-#include <string>
+#include <satFishLib/Clause.h>
 
 Clause::Clause() {}
 
 Clause::Clause(vector<int> variables) {
     //move items from vector to set
     for (const int& variable : variables) {
-        if (find(this->variables.begin(), this->variables.end(), variable) == this->variables.end())
+        if (std::find(this->variables.begin(), this->variables.end(), variable) == this->variables.end())
             this->variables.push_back(variable);
     }
 }

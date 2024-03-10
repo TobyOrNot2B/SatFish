@@ -1,7 +1,7 @@
 #include <iostream>
-#include "Clause.h"
-#include "CNF.h"
-#include "DPLL.h"
+#include <satFishLib/CNF.h>
+#include <satFishLib/DPLL.h>
+#include <satFishLib/Clause.h>
 #include <filesystem>
 #include <set>
 

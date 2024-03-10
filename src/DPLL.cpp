@@ -1,4 +1,4 @@
-#include "DPLL.h"
+#include <satFishLib/DPLL.h>
 
 unordered_set<int> solve(const CNF& cnfin, int initial_assignment) {
     //assignments starts as empty vector

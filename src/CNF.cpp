@@ -1,4 +1,4 @@
-#include "CNF.h"
+#include <satFishLib/CNF.h>
 
 CNF::CNF() : CNF(list<Clause>()) {}
 
