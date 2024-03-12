@@ -4,7 +4,7 @@
 using std::string;
 
 //contsants for testfile paths
-const string cnfRepoPath = "C:\\Users\\tbdic\\source\\repos\\CnfRepo\\";
+const string cnfRepoPath = "/home/tobyd/Projects/SatFish/CnfRepo/";
 const string testFilePath = cnfRepoPath + "test.cnf";
 
 TEST_CASE("CNFConstructorTests")
@@ -413,14 +413,12 @@ TEST_CASE("GetUnitClausesTests")
 	list<int> expected = { 6, 10 };
 
 	REQUIRE(2 == (int)unitClauses.size());
-	auto it = unitClauses.begin();
-	for (int expectedUnitClause : expected)
+	// test that all expected elements are in the set
+	for (int variable : expected)
 	{
-	    REQUIRE(expectedUnitClause == *it);
-	    it++;
+	    REQUIRE(unitClauses.find(variable) != unitClauses.end());
 	}
-
-    }
+    }	
 };
 
 TEST_CASE("GetPureLiteralsTests")

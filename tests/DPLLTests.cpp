@@ -5,19 +5,19 @@ using std::string;
 
 namespace DPLLTests
 {
-	const string cnfRepoPath = "C:\\Users\\tbdic\\source\\repos\\CnfRepo\\";
+	const string cnfRepoPath = "/home/tobyd/Projects/SatFish/CnfRepo/";
 
 	const string testFilePath = cnfRepoPath + "test.cnf";
 	const string exampleFilePath = cnfRepoPath + "example.cnf";
 
-	const string cgpPath = cnfRepoPath + "SATLIB\\graphColouring\\raw\\";
+	const string cgpPath = cnfRepoPath + "SATLIB/graphColouring/raw/";
 	const string flat30_1 = cgpPath + "flat30-1.cnf";
 	const string flat30_2 = cgpPath + "flat30-2.cnf";
 	const string flat30_3 = cgpPath + "flat30-3.cnf";
 	const string flat30_4 = cgpPath + "flat30-4.cnf";
 	const string flat30_5 = cgpPath + "flat30-5.cnf";
 
-	const string random3SATPath = cnfRepoPath + "SATLIB\\RandomUniform\\raw\\";
+	const string random3SATPath = cnfRepoPath + "SATLIB/RandomUniform/raw/";
 	const string uf100_1 = random3SATPath + "uf100-01.cnf";
 	const string uf100_2 = random3SATPath + "uf100-02.cnf";
 	const string uf100_3 = random3SATPath + "uf100-03.cnf";
