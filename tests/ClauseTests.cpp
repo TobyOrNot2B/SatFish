@@ -1,106 +1,102 @@
-#include "pch.h"
-#include "CppUnitTest.h"
-#include "../ConsoleApplication1/Clause.h"
-
-using namespace Microsoft::VisualStudio::CppUnitTestFramework;
-using std::string;
+#include <catch2/catch_test_macros.hpp>
+#include <satFishLib/Clause.h>
 
 namespace ClauseTests
 {
-    TEST_CLASS(ClauseConstroctorTests)
+    TEST_CASE("ClauseConstructorTests")
     {
-        TEST_METHOD(EmptyConstructor)
+        SECTION("EmptyConstructor")
         {
             Clause clause;
-            Assert::AreEqual(0, clause.getSize());
+            REQUIRE(0 == clause.getSize());
         }
-        TEST_METHOD(VariablesConstructorOneVariable)
+        SECTION("VariablesConstructorOneVariable")
         {
             Clause clause({ 1 });
-            Assert::AreEqual(1, clause.getSize());
+	    REQUIRE(1 == clause.getSize());
         }
-        TEST_METHOD(VariablesConstructor)
+        SECTION("VariablesConstructor")
         {
             Clause clause({ 1, 2, 3 });
-            Assert::AreEqual(3, clause.getSize());
+	    REQUIRE(3 == clause.getSize());
         }
     };
 
-    TEST_CLASS(isSatisfiedTests)
+    TEST_CASE("isSatisfiedTests")
     {
-        TEST_METHOD(EmptyClauseEmptyAssignment)
+        SECTION("EmptyClauseEmptyAssignment")
         {
             Clause clause;
             vector<int> assignments;
-            Assert::IsFalse(clause.isSatisfied(assignments));
+            REQUIRE_FALSE(clause.isSatisfied(assignments));
         }
 
-        TEST_METHOD(EmptyClauseWithAssignment)
+        SECTION("EmptyClauseWithAssignment")
         {
             Clause clause;
             vector<int> assignments = { 1 };
-            Assert::IsFalse(clause.isSatisfied(assignments));
+            REQUIRE_FALSE(clause.isSatisfied(assignments));
         }
 
-        TEST_METHOD(OneVariableClauseWithAssignment)
+        SECTION("OneVariableClauseWithAssignment")
         {
             Clause clause({ 1 });
             vector<int> assignments = { 1 };
-            Assert::IsTrue(clause.isSatisfied(assignments));
+            REQUIRE(clause.isSatisfied(assignments));
         }
 
-        TEST_METHOD(OneVariableClauseWithBadAssignment)
+        SECTION("OneVariableClauseWithBadAssignment")
         {
             Clause clause({ 1 });
             vector<int> assignments = { 2 };
-            Assert::IsFalse(clause.isSatisfied(assignments));
+            REQUIRE_FALSE(clause.isSatisfied(assignments));
         }
 
-        TEST_METHOD(OneVariableClauseWithMultiAssignment)
+        SECTION("OneVariableClauseWithMultiAssignment")
         {
             Clause clause({ 1 });
             vector<int> assignments = { 1, 2 };
-            Assert::IsTrue(clause.isSatisfied(assignments));
+            REQUIRE(clause.isSatisfied(assignments));
         }
 
-        TEST_METHOD(TwoVariableClauseWithAssignment)
+        SECTION("TwoVariableClauseWithAssignment")
         {
             Clause clause({ 1, 2 });
             vector<int> assignments = { 1 };
-            Assert::IsTrue(clause.isSatisfied(assignments));
+            REQUIRE(clause.isSatisfied(assignments));
         }
     };
 
-    TEST_CLASS(containsTests)
+    TEST_CASE("containsTests")
     {
-        TEST_METHOD(EmptyClause)
+        SECTION("EmptyClause")
         {
             Clause clause;
-            Assert::IsFalse(clause.contains(1));
+            REQUIRE_FALSE(clause.contains(1));
         }
 
-        TEST_METHOD(OneVariableClauseWithVariable)
+        SECTION("OneVariableClauseWithVariable")
         {
             Clause clause({ 1 });
-            Assert::IsTrue(clause.contains(1));
+            REQUIRE(clause.contains(1));
         }
 
-        TEST_METHOD(OneVariableClauseWithoutVariable)
+        SECTION("OneVariableClauseWithoutVariable")
         {
             Clause clause({ 1 });
-            Assert::IsFalse(clause.contains(2));
+            REQUIRE_FALSE(clause.contains(2));
         }
 
-        TEST_METHOD(TwoVariableClauseWithVariable)
+        SECTION("TwoVariableClauseWithVariable")
         {
             Clause clause({ 1, 2 });
-            Assert::IsTrue(clause.contains(1));
+            REQUIRE(clause.contains(1));
         }
 
-        TEST_METHOD(TwoVariableClauseWithoutVariable)
+        SECTION("TwoVariableClauseWithoutVariable")
         {
             Clause clause({ 1, 2 });
-            Assert::IsFalse(clause.contains(3));
+            REQUIRE_FALSE(clause.contains(3));
         }
     };
 }

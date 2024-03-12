@@ -1,8 +1,6 @@
-#include "pch.h"
-#include "CppUnitTest.h"
-#include "../ConsoleApplication1/DPLL.h"
+#include <catch2/catch_test_macros.hpp>
+#include <satFishLib/DPLL.h>
 
-using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 using std::string;
 
 namespace DPLLTests
@@ -31,146 +29,146 @@ namespace DPLLTests
 	const string uuf100_4 = random3SATPath + "uuf100-04.cnf";
 	const string uuf100_5 = random3SATPath + "uuf100-05.cnf";
 
-	TEST_CLASS(SolverTests)
+	TEST_CASE("SolverTests")
 	{
-		TEST_METHOD(solveOneVar) {
+		SECTION("solveOneVar") {
 			CNF cnf = CNF();
 			cnf.addClause(Clause({ 1 }));
 
 			unordered_set<int> assignments = solve(cnf);
 
-			Assert::AreEqual(1, (int)assignments.size());
-			Assert::AreEqual(1, *assignments.begin());
+			REQUIRE(1 == (int)assignments.size());
+			REQUIRE(1 == *assignments.begin());
 		}
 
-		TEST_METHOD(solveTautology) {
+		SECTION("solveTautology") {
 			CNF cnf = CNF();
 			cnf.addClause(Clause({ 1, -1 }));
 
 			unordered_set<int> assignments = solve(cnf);
 
-			Assert::AreEqual(1, (int)assignments.size());
-			Assert::AreEqual(1, *assignments.begin());
+			REQUIRE(1 == (int)assignments.size());
+			REQUIRE(1 == *assignments.begin());
 		}
 		
-		TEST_METHOD(solveProblemInFile) {
+		SECTION("solveProblemInFile") {
 			CNF cnf = CNF(testFilePath);
 
 			unordered_set<int> assignments = solve(cnf);
 			unordered_set<int> expected = { 1, -2, 3, 4, -5 };
 
-			Assert::AreEqual(expected.size(), assignments.size());
+			REQUIRE(expected.size() == assignments.size());
 			for (int i : expected) {
-				Assert::IsTrue(assignments.find(i) != assignments.end());
+				CHECK(assignments.find(i) != assignments.end());
 			}
 		}
 
-		TEST_METHOD(solveProblemInFile2) {
+		SECTION("solveProblemInFile2") {
 			CNF cnf = CNF(exampleFilePath);
 
 			unordered_set<int> assignments = solve(cnf);
 			unordered_set<int> expected = { 1, 2, -3, 4, -5, -6, 7 };
 
-			Assert::AreEqual(expected.size(), assignments.size());
+			REQUIRE(expected.size() == assignments.size());
 			for (int i : expected) {
-				Assert::IsTrue(assignments.find(i) != assignments.end());
+				REQUIRE(assignments.find(i) != assignments.end());
 			}
 		}
 	};
 
-	TEST_CLASS(gcpTests) {
-		TEST_METHOD(solveFlat30_1) {
+	TEST_CASE("gcpTests") {
+		SECTION("solveFlat30_1") {
 			CNF cnf = CNF(flat30_1);
 			unordered_set<int> assignments = solve(cnf);
-			Assert::AreEqual(90, (int)assignments.size());
+			REQUIRE(90 == (int)assignments.size());
 		}
 
-		TEST_METHOD(solveFlat30_2) {
+		SECTION("solveFlat30_2") {
 			CNF cnf = CNF(flat30_2);
 			unordered_set<int> assignments = solve(cnf);
-			Assert::AreEqual(90, (int)assignments.size());
+			REQUIRE(90 == (int)assignments.size());
 		}
 
-		TEST_METHOD(solveFlat30_3) {
+		SECTION("solveFlat30_3") {
 			CNF cnf = CNF(flat30_3);
 			unordered_set<int> assignments = solve(cnf);
-			Assert::AreEqual(90, (int)assignments.size());
+			REQUIRE(90 == (int)assignments.size());
 		}
 
-		TEST_METHOD(solveFlat30_4) {
+		SECTION("solveFlat30_4") {
 			CNF cnf = CNF(flat30_4);
 			unordered_set<int> assignments = solve(cnf);
-			Assert::AreEqual(90, (int)assignments.size());
+			REQUIRE(90 == (int)assignments.size());
 		}
 
-		TEST_METHOD(solveFlat30_5) {
+		SECTION("solveFlat30_5") {
 			CNF cnf = CNF(flat30_5);
 			unordered_set<int> assignments = solve(cnf);
-			Assert::AreEqual(90, (int)assignments.size());
+			REQUIRE(90 == (int)assignments.size());
 		}
 	};
 
-	TEST_CLASS(uniformRandomTests) {
-		TEST_METHOD(solveuf100_1) {
+	TEST_CASE("uniformRandomTests") {
+		SECTION("solveuf100_1") {
 			CNF cnf = CNF(uf100_1);
 			unordered_set<int> assignments = solve(cnf);
-			Assert::AreNotEqual(0, (int)assignments.size());
+			REQUIRE_FALSE(0 == (int)assignments.size());
 		}
 
-		TEST_METHOD(solveuf100_2) {
+		SECTION("solveuf100_2") {
 			CNF cnf = CNF(uf100_2);
 			unordered_set<int> assignments = solve(cnf);
-			Assert::AreNotEqual(0, (int)assignments.size());
+			REQUIRE_FALSE(0 == (int)assignments.size());
 		}
 
-		TEST_METHOD(solveuf100_3) {
+		SECTION("solveuf100_3") {
 			CNF cnf = CNF(uf100_3);
 			unordered_set<int> assignments = solve(cnf);
-			Assert::AreNotEqual(0, (int)assignments.size());
+			REQUIRE_FALSE(0 == (int)assignments.size());
 		}
 
-		TEST_METHOD(solveuf100_4) {
+		SECTION("solveuf100_4") {
 			CNF cnf = CNF(uf100_4);
 			unordered_set<int> assignments = solve(cnf);
-			Assert::AreNotEqual(0, (int)assignments.size());
+			REQUIRE_FALSE(0 == (int)assignments.size());
 		}
 
-		TEST_METHOD(solveuf100_5) {
+		SECTION("solveuf100_5") {
 			CNF cnf = CNF(uf100_5);
 			unordered_set<int> assignments = solve(cnf);
-			Assert::AreNotEqual(0, (int)assignments.size());
+			REQUIRE_FALSE(0 == (int)assignments.size());
 		}
 	};
 
-	TEST_CLASS(unsatUniformRandomTests) {
-		TEST_METHOD(solveuuf100_1) {
+	TEST_CASE("unsatUniformRandomTests") {
+		SECTION("solveuuf100_1") {
 			CNF cnf = CNF(uuf100_1);
 			unordered_set<int> assignments = solve(cnf);
-			Assert::AreEqual(0, (int)assignments.size());
+			REQUIRE(0 == (int)assignments.size());
 		}
 
-		TEST_METHOD(solveuuf100_2) {
+		SECTION("solveuuf100_2") {
 			CNF cnf = CNF(uuf100_2);
 			unordered_set<int> assignments = solve(cnf);
-			Assert::AreEqual(0, (int)assignments.size());
+			REQUIRE(0 == (int)assignments.size());
 		}
 
-		TEST_METHOD(solveuuf100_3) {
+		SECTION("solveuuf100_3") {
 			CNF cnf = CNF(uuf100_3);
 			unordered_set<int> assignments = solve(cnf);
-			Assert::AreEqual(0, (int)assignments.size());
+			REQUIRE(0 == (int)assignments.size());
 		}
 
-		TEST_METHOD(solveuuf100_4) {
+		SECTION("solveuuf100_4") {
 			CNF cnf = CNF(uuf100_4);
 			unordered_set<int> assignments = solve(cnf);
-			Assert::AreEqual(0, (int)assignments.size());
+			REQUIRE(0 == (int)assignments.size());
 		}
 
-		TEST_METHOD(solveuuf100_5) {
+		SECTION("solveuuf100_5") {
 			CNF cnf = CNF(uuf100_5);
 			unordered_set<int> assignments = solve(cnf);
-			Assert::AreEqual(0, (int)assignments.size());
+			REQUIRE(0 == (int)assignments.size());
 		}
 	};
 }
