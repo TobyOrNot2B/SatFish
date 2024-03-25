@@ -1,8 +1,6 @@
 #pragma once
 
-#include "Clause.h"
 #include "CNF.h"
-#include "Clause.h"
 
 using std::cout;
 using std::endl;

@@ -1,6 +1,6 @@
 #include <satFishLib/CNF.h>
 
-CNF::CNF() : CNF(list<Clause>()) {}
+CNF::CNF() : CNF(list<vector<int>>()) {}
 
 //copy constructor
 CNF::CNF(const CNF& cnf) {
@@ -53,7 +53,7 @@ CNF::CNF(string filename)
 
                 while (ss >> variable) {
                     if (variable == 0) {
-                        this->addClause(Clause(variables));
+                        this->addClause(variables);
                         variables.clear();
                     }
                     else {
@@ -71,27 +71,29 @@ CNF::CNF(string filename)
 
 }
 
-CNF::CNF(list<Clause> clauses)
+CNF::CNF(list<vector<int>> clauses)
 {
     //iiterate through each clause
     for (auto it = clauses.begin(); it != clauses.end(); it++) {
         //for each variable in the clause
-        Clause clause = *it;
+        vector<int> clause = *it;
         addClause(clause);
     }
 }
 
-void CNF::addClause(Clause clause)
+void CNF::addClause(vector<int> clause)
 {
+    //remove duplicates
+    sort(clause.begin(), clause.end());
+    clause.erase(unique(clause.begin(), clause.end()), clause.end());
+
     clauses.push_back(clause);
 
-    if (clause.getSize() == 0) {
+    if (clause.size() == 0) {
         has_empty_clause = true;
     }
 
-    vector<int> variables = clause.getVariables();
-
-    for (auto it = variables.begin(); it != variables.end(); it++) {
+    for (auto it = clause.begin(); it != clause.end(); it++) {
         int variable = *it;
         if (variable_occurence_map.find(variable) == variable_occurence_map.end()) {
             variable_occurence_map[variable] = 1;
@@ -100,20 +102,6 @@ void CNF::addClause(Clause clause)
             variable_occurence_map[variable]++;
         }
     }
-}
-
-auto CNF::eraseClause(std::list<Clause>::const_iterator clause) {
-    //update variable_occurence_map
-    vector<int> variables = (*clause).getVariables();
-    for (auto it = variables.begin(); it != variables.end(); it++) {
-        int var = *it;
-        variable_occurence_map[var]--;
-        if (variable_occurence_map[var] == 0) {
-            variable_occurence_map.erase(var);
-        }
-    }
-
-    return clauses.erase(clause);
 }
 
 bool CNF::isUnsatisfiable() const
@@ -139,7 +127,7 @@ int CNF::size() const
     return clauses.size();
 }
 
-list<Clause> CNF::getClauses() const
+list<vector<int>> CNF::getClauses() const
 {
     return clauses;
 }
@@ -178,7 +166,7 @@ void CNF::eliminateAssignments(unordered_set<int> assigments) {
         bool var_is_asserted = false;
         bool var_is_negated = false;
 
-        vector<int> variables = (*it).getVariables();
+        vector<int> variables = *it;
         auto varIt = variables.begin();
 
         while (varIt != variables.end() && !var_is_asserted) {
@@ -188,20 +176,34 @@ void CNF::eliminateAssignments(unordered_set<int> assigments) {
             var_is_negated = (assigments.find(-var) != assigments.end());        
 
             if(var_is_asserted) {
-                it = eraseClause(it);
+		vector<int> clause = *it;
+		for (auto clauseIt = clause.begin(); clauseIt != clause.end(); clauseIt++) {
+		    int var = *clauseIt;
+		    variable_occurence_map[var]--;
+		    if (variable_occurence_map[var] == 0) {
+			variable_occurence_map.erase(var);
+		    }
+		}
+		it = clauses.erase(it);
                 it--;
-            }
-            else if (var_is_negated) {
-                variable_occurence_map[var]--;
-                if (variable_occurence_map[var] == 0) {
-					variable_occurence_map.erase(var);
-				}
+            } else if (var_is_negated) {
+		variable_occurence_map[var]--;
+		if (variable_occurence_map[var] == 0) {
+		    variable_occurence_map.erase(var);
+		}
 
-                int var = *varIt;
-                varIt = variables.erase(varIt);
-                (*it).removeVariable(var);
-            }
-            else {
+		int var = *varIt;
+		varIt = variables.erase(varIt);
+		// remove variable from clause vectro
+
+		auto delIt = find(variables.begin(), variables.end(), -var);
+		if (delIt != variables.end()) {
+		    variables.erase(delIt);
+		}
+
+		// update the vector at "it" to variables
+		*it = variables;
+	    } else {
                 varIt++;
             }
         }
@@ -210,9 +212,9 @@ void CNF::eliminateAssignments(unordered_set<int> assigments) {
 
 unordered_set<int> CNF::getUnitClauses() const {
     unordered_set<int> units;
-    for (const Clause& clause : clauses) {
-        if (clause.getSize() == 1) {
-            vector<int> variables = clause.getVariables();
+    for (const vector<int>& clause : clauses) {
+        if (clause.size() == 1) {
+            vector<int> variables = clause;
             int var = *variables.begin();
             units.insert(var);
         }
@@ -244,8 +246,11 @@ string CNF::toString() const
     str += "p cnf " + std::to_string(literalCount()) + " " + std::to_string(size()) + "\n";
 
     //add clauses
-    for (const Clause& clause : clauses) {
-        str += clause.toString() + "\n";
+    for (const vector<int>& clause : clauses) {
+	for (const int& variable : clause) {
+	    str += std::to_string(variable) + " ";
+	}
+	str += "0\n";
     }
 
     return str;

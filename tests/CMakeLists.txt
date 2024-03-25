@@ -2,9 +2,8 @@ include(AddCatch2)
 
 add_executable(
     satFishTests
-    ClauseTests.cpp
-    DPLLTests.cpp
     CNFTests.cpp
+    DPLLTests.cpp
 )
 
 target_link_libraries(satFishTests PRIVATE satFishLib Catch2::Catch2WithMain)

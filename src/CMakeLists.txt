@@ -1,5 +1,4 @@
 set(SOURCES
-    Clause.cpp
     CNF.cpp
     DPLL.cpp
 )

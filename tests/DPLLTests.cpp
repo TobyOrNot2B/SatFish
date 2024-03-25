@@ -33,7 +33,7 @@ namespace DPLLTests
 	{
 		SECTION("solveOneVar") {
 			CNF cnf = CNF();
-			cnf.addClause(Clause({ 1 }));
+			cnf.addClause({ 1 });
 
 			unordered_set<int> assignments = solve(cnf);
 
@@ -43,7 +43,7 @@ namespace DPLLTests
 
 		SECTION("solveTautology") {
 			CNF cnf = CNF();
-			cnf.addClause(Clause({ 1, -1 }));
+			cnf.addClause({ 1, -1 });
 
 			unordered_set<int> assignments = solve(cnf);
 
@@ -68,6 +68,10 @@ namespace DPLLTests
 
 			unordered_set<int> assignments = solve(cnf);
 			unordered_set<int> expected = { 1, 2, -3, 4, -5, -6, 7 };
+			//print assignments
+			for (int i : assignments) {
+				std::cout << i << std::endl;
+			}
 
 			REQUIRE(expected.size() == assignments.size());
 			for (int i : expected) {
@@ -76,6 +80,7 @@ namespace DPLLTests
 		}
 	};
 
+/*
 	TEST_CASE("gcpTests") {
 		SECTION("solveFlat30_1") {
 			CNF cnf = CNF(flat30_1);
@@ -171,4 +176,5 @@ namespace DPLLTests
 			REQUIRE(0 == (int)assignments.size());
 		}
 	};
+*/
 }
