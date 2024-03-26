@@ -5,5 +5,5 @@
 using std::cout;
 using std::endl;
 
-unordered_set<int> solve(const CNF& cnf, int assignment);
-unordered_set<int> solve(const CNF& cnf);
+vector<int> solve(const CNF& cnf, int assignment);
+vector<int> solve(const CNF& cnf);

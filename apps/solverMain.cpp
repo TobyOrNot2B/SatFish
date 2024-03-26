@@ -19,7 +19,7 @@ int main(int argc, char **argv)
             std::cout << "Input file: " << path << endl;
         }
         CNF cnf(path);
-        unordered_set<int> solution = solve(cnf);
+        vector<int> solution = solve(cnf);
         cout << "size: " << solution.size() << endl;
 
         //put solution in a sorted set
@@ -56,7 +56,7 @@ int main(int argc, char **argv)
             CNF cnf(entry.path().string());
             //start a timer
             auto start = std::chrono::high_resolution_clock::now();
-            unordered_set<int> solution = solve(cnf);
+            vector<int> solution = solve(cnf);
             auto end = std::chrono::high_resolution_clock::now();
             uint64_t duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
             outputfile << entry.path().filename() << ", "

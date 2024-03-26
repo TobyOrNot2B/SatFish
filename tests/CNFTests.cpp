@@ -26,7 +26,7 @@ TEST_CASE("CNFConstructorTests")
 
 	string cnf_string = cnf.toString();
 
-	string expected = "p cnf 5 2\n1 -2 3 0\n-3 4 -5 0\n";
+	string expected = "p cnf 5 2\n-2 1 3 0\n-5 -3 4 0\n";
 
 	REQUIRE(expected == cnf_string);
     }
@@ -37,7 +37,7 @@ TEST_CASE("CNFConstructorTests")
 
 	string cnf_string = cnf.toString();
 
-	string expected = "p cnf 5 2\n1 -2 3 0\n-3 4 -5 0\n";
+	string expected = "p cnf 5 2\n-2 1 3 0\n-5 -3 4 0\n";
 
 	REQUIRE(expected == cnf_string);
     }
@@ -48,13 +48,13 @@ TEST_CASE("CNFConstructorTests")
 	CNF cnf_copy = CNF(cnf);
 	string cnf_string = cnf.toString();
 	string cnf_copy_string = cnf_copy.toString();
-	string expected = "p cnf 5 2\n1 -2 3 0\n-3 4 -5 0\n";
+	string expected = "p cnf 5 2\n-2 1 3 0\n-5 -3 4 0\n";
 
 	REQUIRE(expected == cnf_string);
 	REQUIRE(expected == cnf_copy_string);
 
 	cnf_copy.addClause({ 1, 2, 3 });
-	string expected2 = "p cnf 5 3\n1 -2 3 0\n-3 4 -5 0\n1 2 3 0\n";
+	string expected2 = "p cnf 5 3\n-2 1 3 0\n-5 -3 4 0\n1 2 3 0\n";
 
 	REQUIRE(expected == cnf_string);
 	REQUIRE(expected == cnf_copy_string);
@@ -215,11 +215,11 @@ TEST_CASE("EliminateAssignmentsTests")
 	CNF cnf2 = CNF();
 
 	cnf.eliminateAssignments({ 1 });
-	string expected = "p cnf 2 2\n3 2 0\n-3 2 0\n";
+	string expected = "p cnf 2 2\n2 3 0\n-3 2 0\n";
 	CHECK(expected == cnf.toString());
 
 	cnf2.eliminateAssignments({ -1 });
-	expected = "p cnf 2 2\n3 2 0\n-3 2 0\n";
+	expected = "p cnf 2 2\n2 3 0\n-3 2 0\n";
 	CHECK(expected == cnf.toString());
     }
 };
@@ -366,7 +366,7 @@ TEST_CASE("GetUnitClausesTests")
     SECTION("GetUnitClausesFromEmptyCNF")
     {
 	CNF cnf = CNF();
-	unordered_set<int> unitClauses = cnf.getUnitClauses();
+	vector<int> unitClauses = cnf.getUnitClauses();
 
 	REQUIRE(0 == (int)unitClauses.size());
     }
@@ -375,7 +375,7 @@ TEST_CASE("GetUnitClausesTests")
     {
 	CNF cnf = CNF();
 	cnf.addClause({ 1 });
-	unordered_set<int> unitClauses = cnf.getUnitClauses();
+	vector<int> unitClauses = cnf.getUnitClauses();
 
 	REQUIRE(1 == (int)unitClauses.size());
 	REQUIRE(1 == *unitClauses.begin());
@@ -386,7 +386,7 @@ TEST_CASE("GetUnitClausesTests")
 	CNF cnf = CNF();
 	cnf.addClause({ 1, -1 });
 
-	unordered_set<int> pureLiterals = cnf.getUnitClauses();
+	vector<int> pureLiterals = cnf.getUnitClauses();
 	list<int> expectedPureLiterals = { };
 
 	REQUIRE(0 == (int)pureLiterals.size());
@@ -396,7 +396,7 @@ TEST_CASE("GetUnitClausesTests")
     {
 	CNF cnf = CNF();
 	cnf.addClause({ 1, 2, 3 });
-	unordered_set<int> unitClauses = cnf.getUnitClauses();
+	vector<int> unitClauses = cnf.getUnitClauses();
 
 	REQUIRE(0 == (int)unitClauses.size());
     }
@@ -409,14 +409,14 @@ TEST_CASE("GetUnitClausesTests")
 	cnf.addClause({ 6 });
 	cnf.addClause({ -7, 8, -9 });
 	cnf.addClause({ 10 });
-	unordered_set<int> unitClauses = cnf.getUnitClauses();
+	vector<int> unitClauses = cnf.getUnitClauses();
 	list<int> expected = { 6, 10 };
 
 	REQUIRE(2 == (int)unitClauses.size());
 	// test that all expected elements are in the set
 	for (int variable : expected)
 	{
-	    REQUIRE(unitClauses.find(variable) != unitClauses.end());
+	    REQUIRE(find(unitClauses.begin(), unitClauses.end(), variable) != unitClauses.end());
 	}
     }	
 };
@@ -426,7 +426,7 @@ TEST_CASE("GetPureLiteralsTests")
     SECTION("GetPureLiteralsFromEmptyCNF")
     {
 	CNF cnf = CNF();
-	unordered_set<int> pureLiterals = cnf.getPureLiterals();
+	vector<int> pureLiterals = cnf.getPureLiterals();
 
 	REQUIRE(0 == (int)pureLiterals.size());
     }
@@ -435,7 +435,7 @@ TEST_CASE("GetPureLiteralsTests")
     {
 	CNF cnf = CNF();
 	cnf.addClause({ 1 });
-	unordered_set<int> pureLiterals = cnf.getPureLiterals();
+	vector<int> pureLiterals = cnf.getPureLiterals();
 
 	REQUIRE(1 == (int)pureLiterals.size());
 	REQUIRE(1 == *pureLiterals.begin());
@@ -446,7 +446,7 @@ TEST_CASE("GetPureLiteralsTests")
 	CNF cnf = CNF();
 	cnf.addClause({ 1, 2, 3 });
 
-	unordered_set<int> pureLiterals = cnf.getPureLiterals();
+	vector<int> pureLiterals = cnf.getPureLiterals();
 	list<int> expectedPureLiterals = { 1, 2, 3 };
 
 	REQUIRE(expectedPureLiterals.size() == pureLiterals.size());
@@ -459,7 +459,7 @@ TEST_CASE("GetPureLiteralsTests")
 	CNF cnf = CNF();
 	cnf.addClause({ 1, -1 });
 
-	unordered_set<int> pureLiterals = cnf.getPureLiterals();
+	vector<int> pureLiterals = cnf.getPureLiterals();
 	list<int> expectedPureLiterals = { };
 
 	REQUIRE(0 == (int)pureLiterals.size());
@@ -473,7 +473,7 @@ TEST_CASE("GetPureLiteralsTests")
 	cnf.addClause({ -5, 1, -6 });
 	cnf.addClause({ -6 });
 
-	unordered_set<int> pureLiterals = cnf.getPureLiterals();
+	vector<int> pureLiterals = cnf.getPureLiterals();
 	list<int> expectedPureLiterals = { 1, -2, -5, -6 };
 
 	REQUIRE(expectedPureLiterals.size() == pureLiterals.size());

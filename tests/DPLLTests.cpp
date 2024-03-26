@@ -35,7 +35,7 @@ namespace DPLLTests
 			CNF cnf = CNF();
 			cnf.addClause({ 1 });
 
-			unordered_set<int> assignments = solve(cnf);
+			vector<int> assignments = solve(cnf);
 
 			REQUIRE(1 == (int)assignments.size());
 			REQUIRE(1 == *assignments.begin());
@@ -45,7 +45,7 @@ namespace DPLLTests
 			CNF cnf = CNF();
 			cnf.addClause({ 1, -1 });
 
-			unordered_set<int> assignments = solve(cnf);
+			vector<int> assignments = solve(cnf);
 
 			REQUIRE(1 == (int)assignments.size());
 			REQUIRE(1 == *assignments.begin());
@@ -54,20 +54,20 @@ namespace DPLLTests
 		SECTION("solveProblemInFile") {
 			CNF cnf = CNF(testFilePath);
 
-			unordered_set<int> assignments = solve(cnf);
-			unordered_set<int> expected = { 1, -2, 3, 4, -5 };
+			vector<int> assignments = solve(cnf);
+			vector<int> expected = { 1, -2, 3, 4, -5 };
 
 			REQUIRE(expected.size() == assignments.size());
 			for (int i : expected) {
-				CHECK(assignments.find(i) != assignments.end());
+				CHECK(find(assignments.begin(), assignments.end(), i) != assignments.end());
 			}
 		}
 
 		SECTION("solveProblemInFile2") {
 			CNF cnf = CNF(exampleFilePath);
 
-			unordered_set<int> assignments = solve(cnf);
-			unordered_set<int> expected = { 1, 2, -3, 4, -5, -6, 7 };
+			vector<int> assignments = solve(cnf);
+			vector<int> expected = { 1, 2, -3, 4, -5, -6, 7 };
 			//print assignments
 			for (int i : assignments) {
 				std::cout << i << std::endl;
@@ -75,40 +75,39 @@ namespace DPLLTests
 
 			REQUIRE(expected.size() == assignments.size());
 			for (int i : expected) {
-				REQUIRE(assignments.find(i) != assignments.end());
+				REQUIRE(find(assignments.begin(), assignments.end(), i) != assignments.end());
 			}
 		}
 	};
 
-/*
 	TEST_CASE("gcpTests") {
 		SECTION("solveFlat30_1") {
 			CNF cnf = CNF(flat30_1);
-			unordered_set<int> assignments = solve(cnf);
+			vector<int> assignments = solve(cnf);
 			REQUIRE(90 == (int)assignments.size());
 		}
 
 		SECTION("solveFlat30_2") {
 			CNF cnf = CNF(flat30_2);
-			unordered_set<int> assignments = solve(cnf);
+			vector<int> assignments = solve(cnf);
 			REQUIRE(90 == (int)assignments.size());
 		}
 
 		SECTION("solveFlat30_3") {
 			CNF cnf = CNF(flat30_3);
-			unordered_set<int> assignments = solve(cnf);
+			vector<int> assignments = solve(cnf);
 			REQUIRE(90 == (int)assignments.size());
 		}
 
 		SECTION("solveFlat30_4") {
 			CNF cnf = CNF(flat30_4);
-			unordered_set<int> assignments = solve(cnf);
+			vector<int> assignments = solve(cnf);
 			REQUIRE(90 == (int)assignments.size());
 		}
 
 		SECTION("solveFlat30_5") {
 			CNF cnf = CNF(flat30_5);
-			unordered_set<int> assignments = solve(cnf);
+			vector<int> assignments = solve(cnf);
 			REQUIRE(90 == (int)assignments.size());
 		}
 	};
@@ -116,31 +115,31 @@ namespace DPLLTests
 	TEST_CASE("uniformRandomTests") {
 		SECTION("solveuf100_1") {
 			CNF cnf = CNF(uf100_1);
-			unordered_set<int> assignments = solve(cnf);
+			vector<int> assignments = solve(cnf);
 			REQUIRE_FALSE(0 == (int)assignments.size());
 		}
 
 		SECTION("solveuf100_2") {
 			CNF cnf = CNF(uf100_2);
-			unordered_set<int> assignments = solve(cnf);
+			vector<int> assignments = solve(cnf);
 			REQUIRE_FALSE(0 == (int)assignments.size());
 		}
 
 		SECTION("solveuf100_3") {
 			CNF cnf = CNF(uf100_3);
-			unordered_set<int> assignments = solve(cnf);
+			vector<int> assignments = solve(cnf);
 			REQUIRE_FALSE(0 == (int)assignments.size());
 		}
 
 		SECTION("solveuf100_4") {
 			CNF cnf = CNF(uf100_4);
-			unordered_set<int> assignments = solve(cnf);
+			vector<int> assignments = solve(cnf);
 			REQUIRE_FALSE(0 == (int)assignments.size());
 		}
 
 		SECTION("solveuf100_5") {
 			CNF cnf = CNF(uf100_5);
-			unordered_set<int> assignments = solve(cnf);
+			vector<int> assignments = solve(cnf);
 			REQUIRE_FALSE(0 == (int)assignments.size());
 		}
 	};
@@ -148,33 +147,32 @@ namespace DPLLTests
 	TEST_CASE("unsatUniformRandomTests") {
 		SECTION("solveuuf100_1") {
 			CNF cnf = CNF(uuf100_1);
-			unordered_set<int> assignments = solve(cnf);
+			vector<int> assignments = solve(cnf);
 			REQUIRE(0 == (int)assignments.size());
 		}
 
 		SECTION("solveuuf100_2") {
 			CNF cnf = CNF(uuf100_2);
-			unordered_set<int> assignments = solve(cnf);
+			vector<int> assignments = solve(cnf);
 			REQUIRE(0 == (int)assignments.size());
 		}
 
 		SECTION("solveuuf100_3") {
 			CNF cnf = CNF(uuf100_3);
-			unordered_set<int> assignments = solve(cnf);
+			vector<int> assignments = solve(cnf);
 			REQUIRE(0 == (int)assignments.size());
 		}
 
 		SECTION("solveuuf100_4") {
 			CNF cnf = CNF(uuf100_4);
-			unordered_set<int> assignments = solve(cnf);
+			vector<int> assignments = solve(cnf);
 			REQUIRE(0 == (int)assignments.size());
 		}
 
 		SECTION("solveuuf100_5") {
 			CNF cnf = CNF(uuf100_5);
-			unordered_set<int> assignments = solve(cnf);
+			vector<int> assignments = solve(cnf);
 			REQUIRE(0 == (int)assignments.size());
 		}
 	};
-*/
 }

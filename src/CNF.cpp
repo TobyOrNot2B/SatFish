@@ -111,15 +111,15 @@ bool CNF::isUnsatisfiable() const
 
 int CNF::literalCount() const
 {
-    unordered_set<int> counted;
-    int count = 0;
+    vector<int> variablesUsed;
+
     for(auto const& variableOcurance : variable_occurence_map) {
-        if(counted.find(abs(variableOcurance.first)) == counted.end()) {
-            counted.insert(abs(variableOcurance.first));
-            count++;
-        }
+	int var = abs(variableOcurance.first);
+	variablesUsed.push_back(var); 
     }
-    return count;
+    sort(variablesUsed.begin(), variablesUsed.end());
+    variablesUsed.erase(unique(variablesUsed.begin(), variablesUsed.end()), variablesUsed.end());
+    return variablesUsed.size();
 }
 
 int CNF::size() const
@@ -159,7 +159,7 @@ int CNF::selectNextVariable() const
     return max_variable;
 }
 
-void CNF::eliminateAssignments(unordered_set<int> assigments) {
+void CNF::eliminateAssignments(vector<int> assigments) {
     //itterate through each clause
     for (auto it = clauses.begin(); it != clauses.end(); it++) {
 
@@ -172,13 +172,12 @@ void CNF::eliminateAssignments(unordered_set<int> assigments) {
         while (varIt != variables.end() && !var_is_asserted) {
             int var = *varIt;
 
-            var_is_asserted = (assigments.find(var) != assigments.end());
-            var_is_negated = (assigments.find(-var) != assigments.end());        
+	    var_is_asserted = (find(assigments.begin(), assigments.end(), var) != assigments.end());
+	    var_is_negated = (find(assigments.begin(), assigments.end(), -var) != assigments.end());
 
             if(var_is_asserted) {
-		vector<int> clause = *it;
-		for (auto clauseIt = clause.begin(); clauseIt != clause.end(); clauseIt++) {
-		    int var = *clauseIt;
+		for (auto varIt = variables.begin(); varIt != variables.end(); varIt++) {
+		    int var = *varIt;
 		    variable_occurence_map[var]--;
 		    if (variable_occurence_map[var] == 0) {
 			variable_occurence_map.erase(var);
@@ -194,14 +193,12 @@ void CNF::eliminateAssignments(unordered_set<int> assigments) {
 
 		int var = *varIt;
 		varIt = variables.erase(varIt);
-		// remove variable from clause vectro
-
-		auto delIt = find(variables.begin(), variables.end(), -var);
-		if (delIt != variables.end()) {
-		    variables.erase(delIt);
-		}
 
 		// update the vector at "it" to variables
+		if (variables.size() == 0) {
+		    this->has_empty_clause = true;
+		}
+
 		*it = variables;
 	    } else {
                 varIt++;
@@ -210,27 +207,27 @@ void CNF::eliminateAssignments(unordered_set<int> assigments) {
     }
 }
 
-unordered_set<int> CNF::getUnitClauses() const {
-    unordered_set<int> units;
+vector<int> CNF::getUnitClauses() const {
+    vector<int> units;
     for (const vector<int>& clause : clauses) {
         if (clause.size() == 1) {
             vector<int> variables = clause;
             int var = *variables.begin();
-            units.insert(var);
+            units.push_back(var);
         }
     }
     return units;
 }
 
-unordered_set<int> CNF::getPureLiterals() const {
-    unordered_set<int> pure_literals;
+vector<int> CNF::getPureLiterals() const {
+    vector<int> pure_literals;
 
     //for each item in variable_occurence_map
     for (auto it = variable_occurence_map.begin(); it != variable_occurence_map.end(); it++) {
         int var = it->first;
         if (variable_occurence_map.find(-var) == variable_occurence_map.end()) {
             //is a pure literal
-            pure_literals.insert(var);
+            pure_literals.push_back(var);
         }
     }
 

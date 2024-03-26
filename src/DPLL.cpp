@@ -1,9 +1,9 @@
 #include <satFishLib/DPLL.h>
 
-unordered_set<int> solve(const CNF& cnfin, int initial_assignment) {
+vector<int> solve(const CNF& cnfin, int initial_assignment) {
     //assignments starts as empty vector
-    unordered_set<int> assignments;
-    assignments.insert(initial_assignment);
+    vector<int> assignments;
+    assignments.push_back(initial_assignment);
     int varsElimedThisPass = 0;
 
     CNF new_cnf(cnfin);
@@ -11,25 +11,24 @@ unordered_set<int> solve(const CNF& cnfin, int initial_assignment) {
     //simplify cnf
     do
     {
-        unordered_set<int> unit_clauses = new_cnf.getUnitClauses();
-        unordered_set<int> pure_literals = new_cnf.getPureLiterals();
+        vector<int> unit_clauses = new_cnf.getUnitClauses();
+        vector<int> pure_literals = new_cnf.getPureLiterals();
+	
+	assignments.insert(assignments.end(), unit_clauses.begin(), unit_clauses.end());
+	assignments.insert(assignments.end(), pure_literals.begin(), pure_literals.end());
+	sort(assignments.begin(), assignments.end());
+	assignments.erase(unique(assignments.begin(), assignments.end()), assignments.end());
 
-        assignments.insert(pure_literals.begin(), pure_literals.end());
-        assignments.insert(unit_clauses.begin(), unit_clauses.end());
-
-        new_cnf.eliminateAssignments(assignments);
 
         for (auto it = assignments.begin(); it != assignments.end(); it++) {
-			int variable = *it;
-            if (assignments.find(-variable) != assignments.end()) {
-                return unordered_set<int>();
-			}
-		}              
+	    int variable = *it;
+	    if (find(assignments.begin(), assignments.end(), -variable) != assignments.end()) {
+                return vector<int>();
+	    }
+	}              
+        new_cnf.eliminateAssignments(assignments);
 
-        if (new_cnf.isUnsatisfiable()) {
-            return unordered_set<int>();
-        }
-        int varsElimedThisPass = pure_literals.size() + unit_clauses.size();
+        varsElimedThisPass = pure_literals.size() + unit_clauses.size();
     } while (varsElimedThisPass != 0);
 
 
@@ -37,20 +36,23 @@ unordered_set<int> solve(const CNF& cnfin, int initial_assignment) {
         return assignments;
     }
 
-    unordered_set<int> solution;
+    vector<int> solution;
     int selected_variable = new_cnf.selectNextVariable();
     solution = solve(new_cnf, selected_variable);
     if (solution.size() == 0) {
         solution = solve(new_cnf, -selected_variable);
         if (solution.size() == 0) {
-            return unordered_set<int>();
+            return vector<int>();
         }
     }
 
-    assignments.insert(solution.begin(), solution.end());
+    assignments.insert(assignments.end(), solution.begin(), solution.end());
+    sort(assignments.begin(), assignments.end());
+    assignments.erase(unique(assignments.begin(), assignments.end()), assignments.end());
+
     return assignments;
 }
 
-unordered_set<int> solve(const CNF& cnf) {
+vector<int> solve(const CNF& cnf) {
     return solve(cnf, cnf.selectNextVariable());
 }

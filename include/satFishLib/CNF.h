@@ -4,7 +4,6 @@
 #include <string>
 #include <map>
 #include <vector>
-#include <unordered_set>
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -14,7 +13,6 @@ using std::string;
 using std::map;
 using std::list;
 using std::vector;
-using std::unordered_set;
 using std::ifstream;
 using std::stringstream;
 using std::cout;
@@ -35,14 +33,14 @@ public:
 	CNF(string filename);
 	CNF(list<vector<int>> clauses);
 	void addClause(vector<int> clause);
-	void eliminateAssignments(unordered_set<int> assignments);
+	void eliminateAssignments(vector<int> assignments);
 
 	bool isUnsatisfiable() const;
 	int literalCount() const;
 	int size() const;
 	list<vector<int>> getClauses() const;
 	int selectNextVariable() const;
-	unordered_set<int> getPureLiterals() const;
-	unordered_set<int> getUnitClauses() const;
+	vector<int> getPureLiterals() const;
+	vector<int> getUnitClauses() const;
 	string toString() const;
 };
