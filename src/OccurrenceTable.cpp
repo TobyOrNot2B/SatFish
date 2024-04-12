@@ -17,11 +17,12 @@ vector<int> OccurrenceTable::getPureLiterals() const {
     vector<int> pureLiterals;
 
     for (int i = 0; i < literalCount; i++) {
+        int literal = i + 1;
         if (assertionTable[i].size() == 0 && negationTable[i].size() > 0) {
-            pureLiterals.push_back(i);
+            pureLiterals.push_back(-literal);
         }
         else if (negationTable[i].size() == 0 && assertionTable[i].size() > 0) {
-            pureLiterals.push_back(-i);
+            pureLiterals.push_back(literal);
         }
     }
 
@@ -29,9 +30,9 @@ vector<int> OccurrenceTable::getPureLiterals() const {
 }
 
 vector<vector<int>*> OccurrenceTable::getOccurrencesOf(int literal) const {
-
+    //return getOccurrencesOf(literal, false);
     vector<vector<int>*> occurrences;
-    
+
     if (literal == 0) {
         throw invalid_argument("literal cannot be 0");
     } else if (literal > literalCount || -literal > literalCount) {
@@ -67,32 +68,19 @@ void OccurrenceTable::regesterClause(vector<int>* clausep) {
     vector<int> clause = *clausep;
     for (auto it = clause.begin(); it != clause.end(); it++) {
         int literal = *it;
+
+        if (literal == 0) {
+            throw invalid_argument("clause cannot contain 0");
+        } else if (literal > literalCount || -literal > literalCount) {
+            throw invalid_argument("literal out of range");
+        }
+
         if (literal > 0) {
             assertionTable[literal - 1].push_back(clausep);
         }
         else {
-            negationTable[-literal - 1].push_back(clausep);
+            negationTable[(-literal) - 1].push_back(clausep);
         }
-    }
-}
-
-void OccurrenceTable::cleanUp() {
-    // remove null pointers from assertionTable and negationTable
-    for (int i = 0; i < literalCount; i++) {
-        assertionTable[i].erase(
-            remove_if(
-                assertionTable[i].begin(),
-                assertionTable[i].end(),
-                [](vector<int>* clause) { return clause == nullptr; }),
-            assertionTable[i].end()
-        );
-        negationTable[i].erase(
-            remove_if(
-                negationTable[i].begin(),
-                negationTable[i].end(),
-                [](vector<int>* clause) { return clause == nullptr; }),
-            negationTable[i].end()
-        );
     }
 }
 
