@@ -2,55 +2,60 @@
 
 vector<int> solve(const CNF& cnfin, int initial_assignment) {
     //assignments starts as empty vector
-    vector<int> assignments;
-    assignments.push_back(initial_assignment);
-    int varsElimedThisPass = 0;
+    vector<int> assignments = { initial_assignment };
+    vector<int> solution = {};
+    bool units_propagated;
 
     CNF new_cnf(cnfin);
 
     //simplify cnf
     do
     {
+	units_propagated = false;
+
         vector<int> unit_clauses = new_cnf.getUnitClauses();
         vector<int> pure_literals = new_cnf.getPureLiterals();
 	
 	assignments.insert(assignments.end(), unit_clauses.begin(), unit_clauses.end());
 	assignments.insert(assignments.end(), pure_literals.begin(), pure_literals.end());
-	sort(assignments.begin(), assignments.end());
-	assignments.erase(unique(assignments.begin(), assignments.end()), assignments.end());
 
+	if (assignments.size() > 0) {
+	    units_propagated = true;
+	    for (auto it = assignments.begin(); it != assignments.end(); it++) {
+		int variable = *it;
+		if (find(assignments.begin(), assignments.end(), -variable) != assignments.end()) {
+		    return vector<int>();
+		}
+	    }              
+	}
 
-        for (auto it = assignments.begin(); it != assignments.end(); it++) {
-	    int variable = *it;
-	    if (find(assignments.begin(), assignments.end(), -variable) != assignments.end()) {
-                return vector<int>();
-	    }
-	}              
-        new_cnf.eliminateAssignments(assignments);
+	new_cnf.eliminateAssignments(assignments);
+	solution.insert(solution.end(), assignments.begin(), assignments.end());
+	assignments.clear();
 
-        varsElimedThisPass = pure_literals.size() + unit_clauses.size();
-    } while (varsElimedThisPass != 0);
+    } while (units_propagated);
 
 
     if (new_cnf.size() == 0) {
-        return assignments;
+	sort(solution.begin(), solution.end());
+	solution.erase(unique(solution.begin(), solution.end()), solution.end());
+	return solution;
     }
 
-    vector<int> solution;
     int selected_variable = new_cnf.selectNextVariable();
-    solution = solve(new_cnf, selected_variable);
-    if (solution.size() == 0) {
-        solution = solve(new_cnf, -selected_variable);
-        if (solution.size() == 0) {
+    assignments = solve(new_cnf, selected_variable);
+    if (assignments.size() == 0) {
+        assignments = solve(new_cnf, -selected_variable);
+        if (assignments.size() == 0) {
             return vector<int>();
         }
     }
 
-    assignments.insert(assignments.end(), solution.begin(), solution.end());
-    sort(assignments.begin(), assignments.end());
-    assignments.erase(unique(assignments.begin(), assignments.end()), assignments.end());
+    solution.insert(solution.end(), assignments.begin(), assignments.end());
 
-    return assignments;
+    sort(solution.begin(), solution.end());
+    solution.erase(unique(solution.begin(), solution.end()), solution.end());
+    return solution;
 }
 
 vector<int> solve(const CNF& cnf) {

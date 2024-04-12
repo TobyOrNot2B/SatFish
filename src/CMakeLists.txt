@@ -1,6 +1,7 @@
 set(SOURCES
     CNF.cpp
     DPLL.cpp
+    OccurrenceTable.cpp
 )
 
 file(GLOB HEADER_LIST CONFIGURE_DEPENDS "${PROJECT_SOURCE_DIR}/include/satFishLib/*.h")

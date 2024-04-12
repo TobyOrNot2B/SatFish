@@ -5,8 +5,8 @@ CNF::CNF() : CNF(list<vector<int>>()) {}
 //copy constructor
 CNF::CNF(const CNF& cnf) {
     this->clauses = cnf.clauses;
-	this->variable_occurence_map = cnf.variable_occurence_map;
-	this->has_empty_clause = cnf.has_empty_clause;
+    this->variable_occurence_map = cnf.variable_occurence_map;
+    this->has_empty_clause = cnf.has_empty_clause;
 }
 
 CNF::CNF(string filename)
@@ -66,9 +66,7 @@ CNF::CNF(string filename)
     fs.close();
 
     printf("CNF loaded from file: %s\n", filename.c_str());
-    printf("CNF has %d variables\n", literalCount());
-    printf("CNF has %d clauses\n", size());
-
+    printf("variables: %d, clauses: %d\n", literalCount(), size());
 }
 
 CNF::CNF(list<vector<int>> clauses)
@@ -114,8 +112,8 @@ int CNF::literalCount() const
     vector<int> variablesUsed;
 
     for(auto const& variableOcurance : variable_occurence_map) {
-	int var = abs(variableOcurance.first);
-	variablesUsed.push_back(var); 
+        int var = abs(variableOcurance.first);
+        variablesUsed.push_back(var); 
     }
     sort(variablesUsed.begin(), variablesUsed.end());
     variablesUsed.erase(unique(variablesUsed.begin(), variablesUsed.end()), variablesUsed.end());
@@ -141,20 +139,20 @@ int CNF::selectNextVariable() const
         int var = abs(variableOcurance.first);
         auto assertionsIt = variable_occurence_map.find(var);
         auto negationsIt = variable_occurence_map.find(-var);
-        
+
         int assertionCount = (assertionsIt == variable_occurence_map.end()) ? 0 : assertionsIt->second;
         int negationCount = (negationsIt == variable_occurence_map.end()) ? 0 : negationsIt->second;
 
         int count = assertionCount + negationCount;
         if (count > max) {
-			max = count;
+            max = count;
             if (assertionCount >= negationCount) {
-				max_variable = var;
-			}
+                max_variable = var;
+            }
             else {
-				max_variable = -var;
-			}
-		}
+                max_variable = -var;
+            }
+        }
     }
     return max_variable;
 }
@@ -172,35 +170,35 @@ void CNF::eliminateAssignments(vector<int> assigments) {
         while (varIt != variables.end() && !var_is_asserted) {
             int var = *varIt;
 
-	    var_is_asserted = (find(assigments.begin(), assigments.end(), var) != assigments.end());
-	    var_is_negated = (find(assigments.begin(), assigments.end(), -var) != assigments.end());
+            var_is_asserted = (find(assigments.begin(), assigments.end(), var) != assigments.end());
+            var_is_negated = (find(assigments.begin(), assigments.end(), -var) != assigments.end());
 
             if(var_is_asserted) {
-		for (auto varIt = variables.begin(); varIt != variables.end(); varIt++) {
-		    int var = *varIt;
-		    variable_occurence_map[var]--;
-		    if (variable_occurence_map[var] == 0) {
-			variable_occurence_map.erase(var);
-		    }
-		}
-		it = clauses.erase(it);
+                for (auto varIt = variables.begin(); varIt != variables.end(); varIt++) {
+                    int var = *varIt;
+                    variable_occurence_map[var]--;
+                    if (variable_occurence_map[var] == 0) {
+                        variable_occurence_map.erase(var);
+                    }
+                }
+                it = clauses.erase(it);
                 it--;
             } else if (var_is_negated) {
-		variable_occurence_map[var]--;
-		if (variable_occurence_map[var] == 0) {
-		    variable_occurence_map.erase(var);
-		}
+                variable_occurence_map[var]--;
+                if (variable_occurence_map[var] == 0) {
+                    variable_occurence_map.erase(var);
+                }
 
-		int var = *varIt;
-		varIt = variables.erase(varIt);
+                int var = *varIt;
+                varIt = variables.erase(varIt);
 
-		// update the vector at "it" to variables
-		if (variables.size() == 0) {
-		    this->has_empty_clause = true;
-		}
+                // update the vector at "it" to variables
+                if (variables.size() == 0) {
+                    this->has_empty_clause = true;
+                }
 
-		*it = variables;
-	    } else {
+                *it = variables;
+            } else {
                 varIt++;
             }
         }
@@ -244,11 +242,12 @@ string CNF::toString() const
 
     //add clauses
     for (const vector<int>& clause : clauses) {
-	for (const int& variable : clause) {
-	    str += std::to_string(variable) + " ";
-	}
-	str += "0\n";
+        for (const int& variable : clause) {
+            str += std::to_string(variable) + " ";
+        }
+        str += "0\n";
     }
 
     return str;
 }
+
