@@ -4,6 +4,8 @@
 #include <satFishLib/DPLL.h>
 #include <filesystem>
 #include <set>
+#include <algorithm>
+#include <fstream>
 
 bool compareFileEntries(const std::filesystem::directory_entry& a, const std::filesystem::directory_entry& b) {
     return a.path().filename().string() < b.path().filename().string();
@@ -70,7 +72,7 @@ int main(int argc, char **argv)
             uint64_t duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
             std::stringstream outputstream;
             outputstream << entry.path().filename() << ", "
-                << cnf.literalCount() << ", "
+                << cnf.getLiteralCount() << ", "
                 << cnf.size() << ", "
                 << duration << ", " << std::endl;
 

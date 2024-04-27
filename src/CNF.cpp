@@ -1,16 +1,23 @@
 #include <satFishLib/CNF.h>
 
-CNF::CNF() : CNF(list<vector<int>>()) {}
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <algorithm>
+#include <memory>
 
 //copy constructor
 CNF::CNF(const CNF& cnf) {
+    // this isnt copying properly need to fix
     this->clauses = cnf.clauses;
-    this->variable_occurence_map = cnf.variable_occurence_map;
     this->has_empty_clause = cnf.has_empty_clause;
+    this->literalCount = cnf.literalCount;
+    this->clauseCount = cnf.clauseCount;
+    this->occurrenceTable = cnf.occurrenceTable;
 }
 
 CNF::CNF(string filename)
-{
+{ 
     std::ifstream fs(filename);
 
     if (!fs) {
@@ -27,11 +34,11 @@ CNF::CNF(string filename)
                 std::stringstream ss(line);
                 char p;
                 string formatType;
-                int varCount;
                 int clauseCount;
                 string next;
 
-                ss >> p >> formatType >> varCount >> clauseCount >> next;
+                ss >> p >> formatType >> literalCount >> clauseCount >> next;
+                this->occurrenceTable = OccurrenceTable(literalCount);
 
                 if (problemLineRead) {
                     throw std::runtime_error("bad imput file: multiple problem lines");
@@ -54,7 +61,7 @@ CNF::CNF(string filename)
                 while (ss >> variable) {
                     if (variable == 0) {
                         this->addClause(variables);
-                        variables.clear();
+                        vector<int> variables;  
                     }
                     else {
                         variables.push_back(variable);
@@ -66,11 +73,14 @@ CNF::CNF(string filename)
     fs.close();
 
     printf("CNF loaded from file: %s\n", filename.c_str());
-    printf("variables: %d, clauses: %d\n", literalCount(), size());
+    printf("variables: %d, clauses: %d\n", literalCount, size());
 }
 
-CNF::CNF(list<vector<int>> clauses)
+CNF::CNF(int literal_count, list<vector<int>> clauses)
 {
+    occurrenceTable = OccurrenceTable(literal_count);
+    literalCount = literal_count;
+    clauseCount = clauses.size();
     //iiterate through each clause
     for (auto it = clauses.begin(); it != clauses.end(); it++) {
         //for each variable in the clause
@@ -81,7 +91,6 @@ CNF::CNF(list<vector<int>> clauses)
 
 void CNF::addClause(vector<int> clause)
 {
-    //remove duplicates
     sort(clause.begin(), clause.end());
     clause.erase(unique(clause.begin(), clause.end()), clause.end());
 
@@ -91,33 +100,12 @@ void CNF::addClause(vector<int> clause)
         has_empty_clause = true;
     }
 
-    for (auto it = clause.begin(); it != clause.end(); it++) {
-        int variable = *it;
-        if (variable_occurence_map.find(variable) == variable_occurence_map.end()) {
-            variable_occurence_map[variable] = 1;
-        }
-        else {
-            variable_occurence_map[variable]++;
-        }
-    }
+    occurrenceTable.regesterClause(make_shared<vector<int>>(clauses.back()));
 }
 
 bool CNF::isUnsatisfiable() const
 {
     return has_empty_clause;
-}
-
-int CNF::literalCount() const
-{
-    vector<int> variablesUsed;
-
-    for(auto const& variableOcurance : variable_occurence_map) {
-        int var = abs(variableOcurance.first);
-        variablesUsed.push_back(var); 
-    }
-    sort(variablesUsed.begin(), variablesUsed.end());
-    variablesUsed.erase(unique(variablesUsed.begin(), variablesUsed.end()), variablesUsed.end());
-    return variablesUsed.size();
 }
 
 int CNF::size() const
@@ -132,77 +120,33 @@ list<vector<int>> CNF::getClauses() const
 
 int CNF::selectNextVariable() const
 {
-    int max = 0;
-    int max_variable = 0;
+    //TODO add more stragegies to be chosen with flags
 
-    for (auto const& variableOcurance : variable_occurence_map) {
-        int var = abs(variableOcurance.first);
-        auto assertionsIt = variable_occurence_map.find(var);
-        auto negationsIt = variable_occurence_map.find(-var);
-
-        int assertionCount = (assertionsIt == variable_occurence_map.end()) ? 0 : assertionsIt->second;
-        int negationCount = (negationsIt == variable_occurence_map.end()) ? 0 : negationsIt->second;
-
-        int count = assertionCount + negationCount;
-        if (count > max) {
-            max = count;
-            if (assertionCount >= negationCount) {
-                max_variable = var;
-            }
-            else {
-                max_variable = -var;
-            }
-        }
-    }
-    return max_variable;
+    return occurrenceTable.getMostOccurringLiteral();
 }
 
 void CNF::eliminateAssignments(vector<int> assigments) {
-    //itterate through each clause
-    for (auto it = clauses.begin(); it != clauses.end(); it++) {
+    for (int assignment : assigments) {
+        //remove negation not working!!!! fix plz
+        vector<shared_ptr<vector<int>>> assertionOccurrences = occurrenceTable.getOccurrencesOf(assignment);
+        vector<shared_ptr<vector<int>>> negationOccurrences = occurrenceTable.getOccurrencesOf(-assignment);
 
-        bool var_is_asserted = false;
-        bool var_is_negated = false;
+        for (shared_ptr<vector<int>> clause : assertionOccurrences) {
+            occurrenceTable.unregesterClause(clause);
+            clauses.erase(find(clauses.begin(), clauses.end(), *clause));
+        }
 
-        vector<int> variables = *it;
-        auto varIt = variables.begin();
-
-        while (varIt != variables.end() && !var_is_asserted) {
-            int var = *varIt;
-
-            var_is_asserted = (find(assigments.begin(), assigments.end(), var) != assigments.end());
-            var_is_negated = (find(assigments.begin(), assigments.end(), -var) != assigments.end());
-
-            if(var_is_asserted) {
-                for (auto varIt = variables.begin(); varIt != variables.end(); varIt++) {
-                    int var = *varIt;
-                    variable_occurence_map[var]--;
-                    if (variable_occurence_map[var] == 0) {
-                        variable_occurence_map.erase(var);
-                    }
-                }
-                it = clauses.erase(it);
-                it--;
-            } else if (var_is_negated) {
-                variable_occurence_map[var]--;
-                if (variable_occurence_map[var] == 0) {
-                    variable_occurence_map.erase(var);
-                }
-
-                int var = *varIt;
-                varIt = variables.erase(varIt);
-
-                // update the vector at "it" to variables
-                if (variables.size() == 0) {
-                    this->has_empty_clause = true;
-                }
-
-                *it = variables;
-            } else {
-                varIt++;
-            }
+        for (shared_ptr<vector<int>> clausep : negationOccurrences) {
+            vector<int> clause = *clausep;
+            clause.erase(find(clause.begin(), clause.end(), -assignment));
+            *clausep = clause;
+            occurrenceTable.clearLiteral(-assignment);
         }
     }
+}
+
+int CNF::getLiteralCount() const {
+    return literalCount;
 }
 
 vector<int> CNF::getUnitClauses() const {
@@ -218,18 +162,7 @@ vector<int> CNF::getUnitClauses() const {
 }
 
 vector<int> CNF::getPureLiterals() const {
-    vector<int> pure_literals;
-
-    //for each item in variable_occurence_map
-    for (auto it = variable_occurence_map.begin(); it != variable_occurence_map.end(); it++) {
-        int var = it->first;
-        if (variable_occurence_map.find(-var) == variable_occurence_map.end()) {
-            //is a pure literal
-            pure_literals.push_back(var);
-        }
-    }
-
-    return pure_literals;
+    return occurrenceTable.getPureLiterals();
 }
 
 //tostring method
@@ -238,7 +171,7 @@ string CNF::toString() const
     string str = "";
 
     //add problem line
-    str += "p cnf " + std::to_string(literalCount()) + " " + std::to_string(size()) + "\n";
+    str += "p cnf " + std::to_string(literalCount) + " " + std::to_string(size()) + "\n";
 
     //add clauses
     for (const vector<int>& clause : clauses) {

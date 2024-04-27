@@ -1,23 +1,26 @@
 #pragma once
 
 #include <vector>
+#include <memory>
 
 using namespace std;
 
 class OccurrenceTable {
 private:
     int literalCount;
-    vector<vector<vector<int>*>> assertionTable;
-    vector<vector<vector<int>*>> negationTable;
+    vector<vector<shared_ptr<vector<int>>>> assertionTable;
+    vector<vector<shared_ptr<vector<int>>>> negationTable;
 
 public:
+    OccurrenceTable();
     OccurrenceTable(int literalCount);
 
     int getLiteralCount() const;
     vector<int> getPureLiterals() const;
-    vector<vector<int>*> getOccurrencesOf(int literal) const;
-    vector<vector<int>*> getOccurrencesOf(int literal, bool includeNegation) const;
-    void regesterClause(vector<int>* clause);
+    vector<shared_ptr<vector<int>>> getOccurrencesOf(int literal) const;
+    int getMostOccurringLiteral() const;
 
-    void cleanUp();
+    void regesterClause(shared_ptr<vector<int>> clause);
+    void unregesterClause(shared_ptr<vector<int>> clause);
+    void clearLiteral(int literal);
 };

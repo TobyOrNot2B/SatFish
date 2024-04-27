@@ -1,12 +1,16 @@
 #include "satFishLib/OccurrenceTable.h"
 
-#include <algorithm>
 #include <stdexcept>
+#include <algorithm>
+#include <format>
+#include <memory>
+
+OccurrenceTable::OccurrenceTable() : OccurrenceTable(0) {}
 
 OccurrenceTable::OccurrenceTable(int literalCount) {
     this->literalCount = literalCount;
-    assertionTable = vector<vector<vector<int>*>>(literalCount);
-    negationTable = vector<vector<vector<int>*>>(literalCount);
+    assertionTable = vector<vector<shared_ptr<vector<int>>>>(literalCount);
+    negationTable = vector<vector<shared_ptr<vector<int>>>>(literalCount);
 }
 
 int OccurrenceTable::getLiteralCount() const {
@@ -29,14 +33,14 @@ vector<int> OccurrenceTable::getPureLiterals() const {
     return pureLiterals;
 }
 
-vector<vector<int>*> OccurrenceTable::getOccurrencesOf(int literal) const {
+vector<shared_ptr<vector<int>>> OccurrenceTable::getOccurrencesOf(int literal) const {
     //return getOccurrencesOf(literal, false);
-    vector<vector<int>*> occurrences;
+    vector<shared_ptr<vector<int>>> occurrences;
 
     if (literal == 0) {
         throw invalid_argument("literal cannot be 0");
     } else if (literal > literalCount || -literal > literalCount) {
-        throw invalid_argument("literal out of range");
+        throw invalid_argument(std::format("getOccurrencesOf: literal {} out of range {}", literal, literalCount));
     }
 
     if (literal > 0) {
@@ -49,22 +53,7 @@ vector<vector<int>*> OccurrenceTable::getOccurrencesOf(int literal) const {
     return occurrences;
 }
 
-vector<vector<int>*> OccurrenceTable::getOccurrencesOf(
-    int literal,
-    bool includeNegation) const
-{
-    vector<vector<int>*> occurrences;
-
-    occurrences = getOccurrencesOf(literal);
-    if (includeNegation) {
-        vector<vector<int>*> negations = getOccurrencesOf(-literal);
-        occurrences.insert(occurrences.end(), negations.begin(), negations.end());
-    }
-
-    return occurrences;
-}
-
-void OccurrenceTable::regesterClause(vector<int>* clausep) {
+void OccurrenceTable::regesterClause(shared_ptr<vector<int>> clausep) {
     vector<int> clause = *clausep;
     for (auto it = clause.begin(); it != clause.end(); it++) {
         int literal = *it;
@@ -72,7 +61,7 @@ void OccurrenceTable::regesterClause(vector<int>* clausep) {
         if (literal == 0) {
             throw invalid_argument("clause cannot contain 0");
         } else if (literal > literalCount || -literal > literalCount) {
-            throw invalid_argument("literal out of range");
+            throw invalid_argument(std::format("regesterClause: literal {} out of range {}", literal, literalCount));
         }
 
         if (literal > 0) {
@@ -81,6 +70,62 @@ void OccurrenceTable::regesterClause(vector<int>* clausep) {
         else {
             negationTable[(-literal) - 1].push_back(clausep);
         }
+    }
+}
+
+void OccurrenceTable::unregesterClause(shared_ptr<vector<int>> clause) {
+    for (auto it = clause->begin(); it != clause->end(); it++) {
+        int literal = *it;
+
+        if (literal == 0) {
+            throw invalid_argument("clause cannot contain 0");
+        } else if (literal > literalCount || -literal > literalCount) {
+            throw invalid_argument(std::format("unregesterClause: literal {} out of range {}", literal, literalCount));
+        }
+
+        if (literal > 0) {
+            vector<shared_ptr<vector<int>>> assertions = assertionTable[literal - 1];
+            assertions.erase(find(assertions.begin(), assertions.end(), clause));
+            assertionTable[literal - 1] = assertions;
+        }
+        else {
+            vector<shared_ptr<vector<int>>> negations = negationTable[(-literal) - 1];
+            negations.erase(find(negations.begin(), negations.end(), clause));
+            negationTable[(-literal) - 1] = negations;
+        }
+    }
+}
+
+int OccurrenceTable::getMostOccurringLiteral() const {
+    int mostOccurringLiteral = 0;
+    int mostOccurringCount = 0;
+
+    for (int i = 0; i < literalCount; i++) {
+        int literal = i + 1;
+        int assertionCount = assertionTable[i].size();
+        int negationCount = negationTable[i].size();
+
+        if (assertionCount + negationCount > mostOccurringCount) {
+            mostOccurringLiteral = literal;
+            mostOccurringCount = assertionCount + negationCount;
+        }
+    }
+
+    return mostOccurringLiteral;
+}
+
+void OccurrenceTable::clearLiteral(int literal) {
+    if (literal == 0) {
+        throw invalid_argument("literal cannot be 0");
+    } else if (literal > literalCount || -literal > literalCount) {
+        throw invalid_argument(std::format("clearLiteral: literal {} out of range {}", literal, literalCount));
+    }
+
+    if (literal > 0) {
+        assertionTable[literal - 1].clear();
+    }
+    else {
+        negationTable[(-literal) - 1].clear();
     }
 }
 
