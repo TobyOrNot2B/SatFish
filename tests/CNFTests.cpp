@@ -1,12 +1,12 @@
 #include <catch2/catch_test_macros.hpp>
-#include <satFishLib/CNF.h>
+#include <swanseaSatLib/CNF.h>
 
 #include <vector>
 
 using std::string;
 
 // contsants for testfile paths
-const string cnfRepoPath = "/home/tobyd/Projects/SatFish/CnfRepo/";
+const string cnfRepoPath = "/home/tobyd/Projects/SwanseaSat/CnfRepo/";
 const string testFilePath = cnfRepoPath + "test.cnf";
 
 TEST_CASE("CNFConstructorTests")

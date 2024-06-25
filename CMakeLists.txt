@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.27)
 project(
-    SatFish
+    swanseaSat
     VERSION 0.1
     DESCRIPTION "An improved version of the sat solver i wrote for my final year project at Swansea University"
     LANGUAGES CXX

@@ -1,5 +1,5 @@
 # include <catch2/catch_test_macros.hpp>
-# include <satFishLib/OccurrenceTable.h>
+# include <swanseaSatLib/OccurrenceTable.h>
 
 //  TEST_CASE() {
 //      SECTION() {

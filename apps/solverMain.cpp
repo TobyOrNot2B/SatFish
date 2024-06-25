@@ -1,7 +1,7 @@
 #include <iostream>
 #include <sstream>
-#include <satFishLib/CNF.h>
-#include <satFishLib/DPLL.h>
+#include <swanseaSatLib/CNF.h>
+#include <swanseaSatLib/DPLL.h>
 #include <filesystem>
 #include <set>
 #include <algorithm>

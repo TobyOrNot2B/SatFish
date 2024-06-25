@@ -1,5 +1,5 @@
 #include <catch2/catch_test_macros.hpp>
-#include <satFishLib/DPLL.h>
+#include <swanseaSatLib/DPLL.h>
 
 #include <iostream>
 
@@ -7,7 +7,7 @@ using namespace std;
 
 namespace DPLLTests
 {
-const string cnfRepoPath = "/home/tobyd/Projects/SatFish/CnfRepo/";
+const string cnfRepoPath = "/home/tobyd/Projects/SwanseaSat/CnfRepo/";
 
 const string testFilePath = cnfRepoPath + "test.cnf";
 const string exampleFilePath = cnfRepoPath + "example.cnf";

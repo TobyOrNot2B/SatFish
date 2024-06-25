@@ -1,4 +1,4 @@
-#include <satFishLib/DPLL.h>
+#include <swanseaSatLib/DPLL.h>
 
 #include <algorithm>
 

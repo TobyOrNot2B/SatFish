@@ -1,4 +1,4 @@
-add_executable(satFish solverMain.cpp)
+add_executable(swanseaSat solverMain.cpp)
 
-target_link_libraries(satFish PRIVATE satFishLib)
+target_link_libraries(swanseaSat PRIVATE swanseaSatLib)
 

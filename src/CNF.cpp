@@ -1,4 +1,4 @@
-#include <satFishLib/CNF.h>
+#include <swanseaSatLib/CNF.h>
 
 #include <iostream>
 #include <fstream>

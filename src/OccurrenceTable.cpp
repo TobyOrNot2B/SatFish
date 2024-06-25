@@ -1,4 +1,4 @@
-#include "satFishLib/OccurrenceTable.h"
+#include "swanseaSatLib/OccurrenceTable.h"
 
 #include <stdexcept>
 #include <algorithm>

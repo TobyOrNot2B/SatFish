@@ -4,8 +4,8 @@ set(SOURCES
     OccurrenceTable.cpp
 )
 
-file(GLOB HEADER_LIST CONFIGURE_DEPENDS "${PROJECT_SOURCE_DIR}/include/satFishLib/*.h")
+file(GLOB HEADER_LIST CONFIGURE_DEPENDS "${PROJECT_SOURCE_DIR}/include/swanseaSatLib/*.h")
 
-add_library(satFishLib ${SOURCES} ${HEADER_LIST})
-target_include_directories(satFishLib PUBLIC ${PROJECT_SOURCE_DIR}/include)
+add_library(swanseaSatLib ${SOURCES} ${HEADER_LIST})
+target_include_directories(swanseaSatLib PUBLIC ${PROJECT_SOURCE_DIR}/include)
 
