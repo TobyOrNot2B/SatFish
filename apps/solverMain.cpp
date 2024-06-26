@@ -1,3 +1,4 @@
+#include "swanseaSatLib/OccurrenceTable.h"
 #include <iostream>
 #include <sstream>
 #include <swanseaSatLib/CNF.h>
