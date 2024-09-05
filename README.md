@@ -1,5 +1,5 @@
 # SwanseaSat
-A sat solver I wrote for my end of year project at Swansea University.
+An improved version of the sat solver I wrote for my end of year project at Swansea University.
 
 ## CLI
 - `swanseaSat path/to/cnf/file.cnf` solve a sat problem encoded in a cnf file
@@ -11,8 +11,9 @@ A sat solver I wrote for my end of year project at Swansea University.
 - variable occurance based huristic for variable selection.
 
 ## Changes from the original version
+- implemented a variable occurance table greatly improving the eficiency of the solver.
+- generally improved code quality.
 - migrated the project to CMAKE from a visual studio solution
-- ported the unit tests from Microsoft Testing  Framework to CTest3
 - improved the testing (although its still not as thorough as id like)
 - fixed some bugs that i found when i improved the testing.
 
